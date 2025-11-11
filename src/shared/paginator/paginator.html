@@ -1,13 +1,13 @@
 <div class="flex item-center w-full gap-3 py-3">
     <span>Items per page:</span>
-    <select class="select w-24" (change)="onPageChange(undefined, $event.target)">
+    <select class="select w-20 pb-2" (change)="onPageChange(undefined, $event.target)">
         @for(size of pageSizeOptions(); track $index) {
             <option [value]="size" [selected]="size === pageSize()">{{size}}
             </option>
         }
     </select>
 
-    <div class="text-sm">
+    <div class="text-sm pt-1">
         {{(pageNumber() - 1)*pageSize()+1}}-{{lastItemIndex()}} of {{totalCount()}}
     </div>
 

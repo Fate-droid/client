@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { LikesService } from '../../core/services/likes-service';
 import { Member } from '../../types/member';
-import { SubscriptionLoggable } from 'rxjs/internal/testing/SubscriptionLoggable';
 import { MemberCard } from "../members/member-card/member-card";
 import { PaginatedResult } from '../../types/pagination';
 import { Paginator } from "../../shared/paginator/paginator";
