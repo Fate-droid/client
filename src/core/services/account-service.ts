@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { tap } from 'rxjs';
+import { subscribeOn, tap } from 'rxjs';
 import { LoginCreds, RegisterCreds, User } from '../../types/user';
 import { environment } from '../../environments/environment';
 import { LikesService } from './likes-service';
@@ -67,10 +67,15 @@ export class AccountService {
   }
 
   logout() {
-    localStorage.removeItem("filters"); 
-    this.likesService.clearLikeIds();
-    this.currentUser.set(null);
-    this.presenceService.stopHubConnection();
+    this.http.post(this.baseUrl + 'account/logout', {}, {withCredentials: true}).subscribe({
+      next: () => {
+        localStorage.removeItem("filters"); 
+        this.likesService.clearLikeIds();
+        this.currentUser.set(null);
+        this.presenceService.stopHubConnection();
+      }
+    })
+
   }
 
   private getRolesFromToken(user: User): string[] {
