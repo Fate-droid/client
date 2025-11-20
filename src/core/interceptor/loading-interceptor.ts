@@ -1,9 +1,16 @@
 import { HttpEvent, HttpInterceptorFn, HttpParams } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { delay, finalize, of, tap } from 'rxjs';
+import { delay, finalize, identity, of, tap } from 'rxjs';
 import { BusyService } from '../services/busy-service';
+import { environment } from '../../environments/environment';
 
-const cache = new Map<string, HttpEvent<unknown>>();
+type CacheEntry = {
+  response: HttpEvent<unknown>
+  timestamp: number; 
+}
+
+const cache = new Map<string, CacheEntry>();
+const CACHE_DURATION_MS = 5*6*1000; // 5 MINS
 
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   const busyService = inject(BusyService);
@@ -37,15 +44,28 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   if(req.method === "GET"){
     const cachedResponse = cache.get(cacheKey);
     if(cachedResponse){
-      return of(cachedResponse); 
+      const isExpired = (Date.now()-cachedResponse.timestamp) > CACHE_DURATION_MS;
+      if(!isExpired){
+        return of(cachedResponse.response);
+      }
+      else{
+        cache.delete(cacheKey)
+      }
+      return of(cachedResponse.response); 
     }
   }
 
   busyService.busy();
+
   return next(req).pipe(
-    delay(500),
-    tap(Response => {
-      cache.set(cacheKey, Response)
+    (environment.production ? identity : delay(500)),
+    tap(response => {
+      cache.set(cacheKey, 
+        {
+          response,
+          timestamp: Date.now()
+        }
+      )
     }),
     finalize(() => {
       busyService.idle()

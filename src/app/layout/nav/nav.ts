@@ -20,21 +20,22 @@ export class Nav implements OnInit {
   private router = inject(Router);
   private toast = inject(ToastService);
   protected creds: any  = {}
-  protected selectedTheme = signal<string>(localStorage.getItem("theme")||"light");
+  // protected selectedTheme = signal<string>(localStorage.getItem("theme")||"synthwave");
+  protected selectedTheme = "synthwave"
   protected themes = themes;
   protected loading = signal(false);
 
   ngOnInit(): void {
-    document.documentElement.setAttribute("data-theme",this.selectedTheme());
+    document.documentElement.setAttribute("data-theme",this.selectedTheme);
   }
 
-  handleSelectTheme(theme: string){
-    this.selectedTheme.set(theme);
-    localStorage.setItem("theme",theme);
-    document.documentElement.setAttribute("data-theme",theme);
-    const elem = document.activeElement as HTMLDivElement;
-    if(elem) elem.blur();
-  }
+  // handleSelectTheme(theme: string){
+  //   this.selectedTheme.set(theme);
+  //   localStorage.setItem("theme",theme);
+  //   document.documentElement.setAttribute("data-theme",theme);
+  //   const elem = document.activeElement as HTMLDivElement;
+  //   if(elem) elem.blur();
+  // }
 
   handleSelecUserItem(){
     const elem = document.activeElement as HTMLDivElement;
